@@ -1,7 +1,4 @@
-from re import X
 import numpy as np
-
-
 
 def f(x, y):
     return x ** 2 + np.exp(x) + y ** 2 - x * y
@@ -52,30 +49,41 @@ def project_in_triangle(x_k):
 def pgd(x_1, eps, n, project_in_domain):
     x_k = np.array(x_1)
     for i in range(n):
-        x_k = np.array(project_in_domain(x_k + eps(i + 1) * der_f(x_k[0], x_k[1])))
+        x_k = np.array(project_in_domain(x_k - eps(i + 1) * der_f(x_k[0], x_k[1])))
     return x_k
 
-B = 5 + 2 * np.exp(2)
+B = 9.522
 def eps_B(k):
     return 1/B
 def eps_a_B(k):
     return 1/B
-a = 0.00001
+a = 1.07
 def eps_a_L(k):
     return 2/(a * (k + 1))
 L = 15
 
 x1 = np.array([-1, 1])
 for domain in [project_in_circle, project_in_square, project_in_triangle]:
+    if domain == project_in_circle:
+        print("Circle")
+    if domain == project_in_square:
+        print("Square")
+    if domain == project_in_triangle:
+        print("Triangle")
     x_star = np.array([-0.432, -0.216])
     x_k = pgd(x1, eps_B, 10, domain)
 
     norm_x1_minus_x_star = np.linalg.norm(x1 - x_star)
-    print(f(x_k[0], x_k[1]) - f(x_star[0], x_star[1]) <= (3 * B * (norm_x1_minus_x_star ** 2) + f(x1[0], x1[1]) - f(x_star[0], x_star[1])) / (10))
+    print("PGD output", f(x_k[0], x_k[1]) - f(x_star[0], x_star[1]))
+    print("Theorem garantee", (3 * B * (norm_x1_minus_x_star ** 2) + f(x1[0], x1[1]) - f(x_star[0], x_star[1])) / (10))
+    print("Theoretical garantee 1 satisfied", f(x_k[0], x_k[1]) - f(x_star[0], x_star[1]) <= (3 * B * (norm_x1_minus_x_star ** 2) + f(x1[0], x1[1]) - f(x_star[0], x_star[1])) / (10))
     
     x_k_1 = pgd(x1, eps_a_B, 11, domain)
     k = B/a
-    print(f(x_k_1[0], x_k_1[1]) - f(x_star[0], x_star[1]) <= (B/2) * (((k - 1)/k) ** (2 * 10)) * norm_x1_minus_x_star ** 2)
+
+    print("PGD output", f(x_k_1[0], x_k_1[1]) - f(x_star[0], x_star[1]))
+    print("Theorem garantee", (B/2) * (((k - 1)/k) ** (2 * 11)) * (norm_x1_minus_x_star ** 2))
+    print("Theoretical garantee 2 satisfied", f(x_k_1[0], x_k_1[1]) - f(x_star[0], x_star[1]) <= (B/2) * (((k - 1)/k) ** (2 * 11)) * (norm_x1_minus_x_star ** 2))
     
     
     x_k = pgd(x1, eps_a_L, 10, domain)
@@ -83,5 +91,7 @@ for domain in [project_in_circle, project_in_square, project_in_triangle]:
     s0 = np.sum([2 * i * pgd(x1, eps_a_L, i - 1, domain)[0] for i in range(1, 10)])/(110)
     s1 = np.sum([2 * i * pgd(x1, eps_a_L, i - 1, domain)[1] for i in range(1, 10)])/(110)
     
-    print(f(s0, s1) - f(x_star[0], x_star[1]) <= (2 * L ** 2)/(a * (11)))
+    print("PGD output", f(s0, s1) - f(x_star[0], x_star[1]))
+    print("Theorem garantee", (2 * L ** 2)/(a * (11)))
+    print("Theoretical garantee 3 satisfied", f(s0, s1) - f(x_star[0], x_star[1]) <= (2 * L ** 2)/(a * (11)))
     
