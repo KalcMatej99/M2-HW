@@ -53,16 +53,15 @@ def newton(x_1, n, der_f, hess_f):
 def bfgs(x_1, n, der_f):
     number_of_elements = len(x_1)
     x_k = np.array(x_1)
-    B_k = np.identity(number_of_elements)
+    B_k = np.identity(number_of_elements) / 100
     for i in range(n):
         x_k_new = np.array(x_k - B_k.dot(der_f(x_k)))
         sigma = np.nan_to_num(x_k_new - x_k)
         gamma = np.nan_to_num(der_f(x_k_new) - der_f(x_k))
-        print(sigma, gamma)
-        B_k_1 = B_k.copy()
         d = sigma.dot(gamma)
         if d == 0:
             return x_k
+        B_k_1 = B_k.copy()
         B_k = B_k_1 - (
             np.matmul(np.outer(sigma, gamma), B_k_1)
             + np.matmul(B_k_1, np.outer(gamma, sigma))
@@ -224,7 +223,7 @@ for n in [2, 5, 10, 100]:
     print("BFGS", x_k, f1(x_k))
 
 print("Function 2")
-eps = 0.01
+eps = 0.001
 for n in [2, 5, 10, 100]:
     print("n = ", n)
     x_k = gd(start_f2_a, eps, n, der_f2)
