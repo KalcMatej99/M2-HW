@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from time import time
 
@@ -231,67 +232,69 @@ print("Function 1")
 for n in [2, 5, 10, 100]:
     print("n = ", n)
     x_k = gd(start_f1_a, 0.01, n, der_f1)
-    print("GD", x_k, f1(x_k))
+    print("GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = gd(start_f1_b, 0.01, n, der_f1)
-    print("GD", x_k, f1(x_k))
+    print("GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = pgd(start_f1_a, 0.01, 0.01, n, der_f1)
-    print("PGD", x_k, f1(x_k))
+    print("PGD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = pgd(start_f1_b, 0.01, 0.01, n, der_f1)
-    print("PGD", x_k, f1(x_k))
+    print("PGD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = ngd(start_f1_a, 0.01, 0.01, n, der_f1)
-    print("Nesterov GD", x_k, f1(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = ngd(start_f1_b, 0.01, 0.01, n, der_f1)
-    print("Nesterov GD", x_k, f1(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = ada_gd(start_f1_a, 0.01, n, der_f1)
-    print("Adagrad GD", x_k, f1(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = ada_gd(start_f1_b, 0.01, n, der_f1)
-    print("Adagrad GD", x_k, f1(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = newton(start_f1_a, n, der_f1, hess_f1)
-    print("Newton", x_k, f1(x_k))
+    print("Newton", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = newton(start_f1_b, n, der_f1, hess_f1)
-    print("Newton", x_k, f1(x_k))
+    print("Newton", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = bfgs(start_f1_a, n, der_f1)
-    print("BFGS", x_k, f1(x_k))
+    print("BFGS", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = bfgs(start_f1_b, n, der_f1)
-    print("BFGS", x_k, f1(x_k))
+    print("BFGS", np.round(x_k, 3), round(f1(x_k), 3))
+
+
 
 for t in [0.1, 1, 2]:
     print("time max = ", t)
     n = 99999999999999999999999999
     x_k = gd(start_f1_a, 0.01, n, der_f1, t)
-    print("GD", x_k, f1(x_k))
+    print("GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = gd(start_f1_b, 0.01, n, der_f1, t)
-    print("GD", x_k, f1(x_k))
+    print("GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = pgd(start_f1_a, 0.01, 0.01, n, der_f1, t)
-    print("PGD", x_k, f1(x_k))
+    print("PGD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = pgd(start_f1_b, 0.01, 0.01, n, der_f1, t)
-    print("PGD", x_k, f1(x_k))
+    print("PGD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = ngd(start_f1_a, 0.01, 0.01, n, der_f1, t)
-    print("Nesterov GD", x_k, f1(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = ngd(start_f1_b, 0.01, 0.01, n, der_f1, t)
-    print("Nesterov GD", x_k, f1(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = ada_gd(start_f1_a, 0.01, n, der_f1, t)
-    print("Adagrad GD", x_k, f1(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = ada_gd(start_f1_b, 0.01, n, der_f1, t)
-    print("Adagrad GD", x_k, f1(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = newton(start_f1_a, n, der_f1, hess_f1, t)
-    print("Newton", x_k, f1(x_k))
+    print("Newton", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = newton(start_f1_b, n, der_f1, hess_f1, t)
-    print("Newton", x_k, f1(x_k))
+    print("Newton", np.round(x_k, 3), round(f1(x_k), 3))
 
     x_k = bfgs(start_f1_a, n, der_f1, t)
-    print("BFGS", x_k, f1(x_k))
+    print("BFGS", np.round(x_k, 3), round(f1(x_k), 3))
     x_k = bfgs(start_f1_b, n, der_f1, t)
-    print("BFGS", x_k, f1(x_k))
+    print("BFGS", np.round(x_k, 3), round(f1(x_k), 3))
 
 
 print("Function 2")
@@ -299,68 +302,68 @@ eps = 0.001
 for n in [2, 5, 10, 100]:
     print("n = ", n)
     x_k = gd(start_f2_a, eps, n, der_f2)
-    print("GD", x_k, f2(x_k))
+    print("GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = gd(start_f2_b, eps, n, der_f2)
-    print("GD", x_k, f2(x_k))
+    print("GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = pgd(start_f2_a, eps, eps, n, der_f2)
-    print("PGD", x_k, f2(x_k))
+    print("PGD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = pgd(start_f2_b, eps, eps, n, der_f2)
-    print("PGD", x_k, f2(x_k))
+    print("PGD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = ngd(start_f2_a, eps, eps, n, der_f2)
-    print("Nesterov GD", x_k, f2(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = ngd(start_f2_b, eps, eps, n, der_f2)
-    print("Nesterov GD", x_k, f2(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = ada_gd(start_f2_a, eps, n, der_f2)
-    print("Adagrad GD", x_k, f2(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = ada_gd(start_f2_b, eps, n, der_f2)
-    print("Adagrad GD", x_k, f2(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = newton(start_f2_a, n, der_f2, hess_f2)
-    print("Newton", x_k, f2(x_k))
+    print("Newton", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = newton(start_f2_b, n, der_f2, hess_f2)
-    print("Newton", x_k, f2(x_k))
+    print("Newton", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = bfgs(start_f2_a, n, der_f2)
-    print("BFGS", x_k, f2(x_k))
+    print("BFGS", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = bfgs(start_f2_b, n, der_f2)
-    print("BFGS", x_k, f2(x_k))
+    print("BFGS", np.round(x_k, 3), round(f2(x_k), 3))
 
 eps = 0.001
 for t in [0.1, 1, 2]:
     print("time max = ", t)
     n = 99999999999999999999999999
     x_k = gd(start_f2_a, eps, n, der_f2, t)
-    print("GD", x_k, f2(x_k))
+    print("GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = gd(start_f2_b, eps, n, der_f2, t)
-    print("GD", x_k, f2(x_k))
+    print("GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = pgd(start_f2_a, eps, eps, n, der_f2, t)
-    print("PGD", x_k, f2(x_k))
+    print("PGD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = pgd(start_f2_b, eps, eps, n, der_f2, t)
-    print("PGD", x_k, f2(x_k))
+    print("PGD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = ngd(start_f2_a, eps, eps, n, der_f2, t)
-    print("Nesterov GD", x_k, f2(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = ngd(start_f2_b, eps, eps, n, der_f2, t)
-    print("Nesterov GD", x_k, f2(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = ada_gd(start_f2_a, eps, n, der_f2, t)
-    print("Adagrad GD", x_k, f2(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = ada_gd(start_f2_b, eps, n, der_f2, t)
-    print("Adagrad GD", x_k, f2(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = newton(start_f2_a, n, der_f2, hess_f2, t)
-    print("Newton", x_k, f2(x_k))
+    print("Newton", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = newton(start_f2_b, n, der_f2, hess_f2, t)
-    print("Newton", x_k, f2(x_k))
+    print("Newton", np.round(x_k, 3), round(f2(x_k), 3))
 
     x_k = bfgs(start_f2_a, n, der_f2, t)
-    print("BFGS", x_k, f2(x_k))
+    print("BFGS", np.round(x_k, 3), round(f2(x_k), 3))
     x_k = bfgs(start_f2_b, n, der_f2, t)
-    print("BFGS", x_k, f2(x_k))
+    print("BFGS", np.round(x_k, 3), round(f2(x_k), 3))
 
 
 print("Function 3")
@@ -368,65 +371,65 @@ eps = 0.00001
 for n in [2, 5, 10, 100]:
     print("n = ", n)
     x_k = gd(start_f3_a, eps, n, der_f3)
-    print("GD", x_k, f3(x_k))
+    print("GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = gd(start_f3_b, eps, n, der_f3)
-    print("GD", x_k, f3(x_k))
+    print("GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = pgd(start_f3_a, eps, eps, n, der_f3)
-    print("PGD", x_k, f3(x_k))
+    print("PGD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = pgd(start_f3_b, eps, eps, n, der_f3)
-    print("PGD", x_k, f3(x_k))
+    print("PGD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = ngd(start_f3_a, eps, eps, n, der_f3)
-    print("Nesterov GD", x_k, f3(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = ngd(start_f3_b, eps, eps, n, der_f3)
-    print("Nesterov GD", x_k, f3(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = ada_gd(start_f3_a, eps, n, der_f3)
-    print("Adagrad GD", x_k, f3(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = ada_gd(start_f3_b, eps, n, der_f3)
-    print("Adagrad GD", x_k, f3(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = newton(start_f3_a, n, der_f3, hess_f3)
-    print("Newton", x_k, f3(x_k))
+    print("Newton", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = newton(start_f3_b, n, der_f3, hess_f3)
-    print("Newton", x_k, f3(x_k))
+    print("Newton", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = bfgs(start_f3_a, n, der_f3)
-    print("BFGS", x_k, f3(x_k))
+    print("BFGS", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = bfgs(start_f3_b, n, der_f3)
-    print("BFGS", x_k, f3(x_k))
+    print("BFGS", np.round(x_k, 3), round(f3(x_k), 3))
 
 eps = 0.00001
 for t in [0.1, 1, 2]:
     print("time max = ", t)
     n = 99999999999999999999999999
     x_k = gd(start_f3_a, eps, n, der_f3, t)
-    print("GD", x_k, f3(x_k))
+    print("GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = gd(start_f3_b, eps, n, der_f3, t)
-    print("GD", x_k, f3(x_k))
+    print("GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = pgd(start_f3_a, eps, eps, n, der_f3, t)
-    print("PGD", x_k, f3(x_k))
+    print("PGD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = pgd(start_f3_b, eps, eps, n, der_f3, t)
-    print("PGD", x_k, f3(x_k))
+    print("PGD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = ngd(start_f3_a, eps, eps, n, der_f3, t)
-    print("Nesterov GD", x_k, f3(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = ngd(start_f3_b, eps, eps, n, der_f3, t)
-    print("Nesterov GD", x_k, f3(x_k))
+    print("Nesterov GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = ada_gd(start_f3_a, eps, n, der_f3, t)
-    print("Adagrad GD", x_k, f3(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = ada_gd(start_f3_b, eps, n, der_f3, t)
-    print("Adagrad GD", x_k, f3(x_k))
+    print("Adagrad GD", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = newton(start_f3_a, n, der_f3, hess_f3, t)
-    print("Newton", x_k, f3(x_k))
+    print("Newton", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = newton(start_f3_b, n, der_f3, hess_f3, t)
-    print("Newton", x_k, f3(x_k))
+    print("Newton", np.round(x_k, 3), round(f3(x_k), 3))
 
     x_k = bfgs(start_f3_a, n, der_f3, t)
-    print("BFGS", x_k, f3(x_k))
+    print("BFGS", np.round(x_k, 3), round(f3(x_k), 3))
     x_k = bfgs(start_f3_b, n, der_f3, t)
-    print("BFGS", x_k, f3(x_k))
+    print("BFGS", np.round(x_k, 3), round(f3(x_k), 3))

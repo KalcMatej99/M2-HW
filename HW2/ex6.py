@@ -56,30 +56,37 @@ def l_bfgs(x_1, n, der_f, X, y):
     x_k = np.array(x_1)
     B_k = np.identity(number_of_elements) / 100000
 
+    eps = 1
 
     gamma = []
     omega = []
 
+    m = 10
+
     for k in range(n):
         q = der_f(x_k, X, y)
-        for i in range(k):
-            p_i = np.linalg.inv(np.dot(omega[i], gamma[i]))
-            alfa_i = np.dot(np.dot(p_i, omega[i]), q)
-            q -= np.dot(alfa_i, gamma[i])
+        for i in range(k - 1, max(0, k - m - 1), -1):
+            if np.dot(omega[i], gamma[i]) == 0:
+                return x_k
+            p_i = np.nan_to_num(1/np.dot(omega[i], gamma[i]))
+            alfa_i = p_i * np.dot(omega[i], q)
+            q -= alfa_i * gamma[i]
 
         if k > 0:
-            B_k = np.dot(omega[k], gamma[k])/np.dot(gamma[k], gamma[k]) * np.identity(len(x_1))
+            B_k = np.dot(omega[k-1], gamma[k-1])/np.dot(gamma[k-1], gamma[k-1]) * np.identity(len(x_1))
         r = np.dot(B_k, q)
 
-        for i in range(k):
-            p_i = np.linalg.inv(np.dot(omega[i], gamma[i]))
-            alfa_i = np.dot(np.dot(p_i, omega[i]), q)
-            b = np.dot(np.dot(p_i, gamma[i]), r)
-            r += np.dot(omega[i], alfa_i - b)
+        for i in range(max(0, k - m), k):
+            p_i = np.nan_to_num(1/np.dot(omega[i], gamma[i]))
+            alfa_i = p_i * np.dot(omega[i], q)
+            b = p_i * np.dot(gamma[i], r)
+            r += omega[i] * (alfa_i - b)
 
-        x_k_new = x_k - r
+        x_k_new = x_k - eps * r
         omega.append(np.nan_to_num(x_k_new - x_k))
         gamma.append(np.nan_to_num(der_f(x_k_new, X, y) - der_f(x_k, X, y)))
+        if np.array_equal(x_k, x_k_new):
+            return x_k_new
         x_k = x_k_new
 
     return x_k
@@ -102,44 +109,55 @@ def loss(k, n, X):
     return loss
 
 def der_f(x_k, X, y):
-    return 2 * np.dot((np.dot(np.transpose(x_k), np.transpose(X)) - y), X)
+    return 2 * np.dot(np.transpose(np.dot(x_k, np.transpose(X)) - np.transpose(y)), X)
+def hess_f(X, y):
+    return 2 * np.matmul(np.transpose(X), X)
 
 def der_f_stohastic(x_k, X, y):
     j = random.randint(0, len(X)-1)
     return 2 * np.dot((np.dot(np.transpose(x_k), np.transpose(X[j, :])) - y[j]), X[j, :])
 
-
-print("L-BFGS")
-for N in [50, 100, 1000, 10000, 100000, 1000000]:
-    X, y = generateN(N)
-    x_1 = [2, 2]
-    n = 100000
-    x_k = l_bfgs(x_1, n, der_f, X, y)
-    print(x_k)
-
-
-print("BFGS")
-for N in [50, 100, 1000, 10000, 100000, 1000000]:
-    X, y = generateN(N)
-    x_1 = [2, 2]
-    n = 100000
-    x_k = bfgs(x_1, n, der_f, X, y)
-    print(x_k)
-
-print("SGD")
-for N in [50, 100, 1000, 10000, 100000, 1000000]:
-    X, y = generateN(N)
-    x_1 = [2, 2]
-    eps = 0.01/(N ** 2)
-    n = 100000
-    x_k = sgd(x_1, eps, n, der_f_stohastic, X, y)
-    print(x_k)
+def rmse(x_k, X, y):
+    return np.sqrt(np.sum(np.square(np.dot(x_k, np.transpose(X)) - y))/len(X))
 
 print("GD")
 for N in [50, 100, 1000, 10000, 100000, 1000000]:
     X, y = generateN(N)
-    x_1 = [2, 2]
-    eps = 0.01/(N ** 3)
-    n = 1000
+    x_1 = [2, 1]
+
+    eigenvals = np.linalg.eigvals(hess_f(X, y))
+    alfa = np.min(eigenvals)
+    beta = np.max(eigenvals)
+    eps = 2/(alfa + beta)
+    n = 10000
     x_k = gd(x_1, eps, n, der_f, X, y)
-    print(x_k)
+    print(N, np.round(x_k, 3), "RMSE", np.round(rmse(x_k, X, y), 3))
+
+print("SGD")
+for N in [50, 100, 1000, 10000, 100000, 1000000]:
+    X, y = generateN(N)
+    x_1 = [2, 1]
+    eps = 0.01/(N ** 2)
+    n = 10000
+    x_k = sgd(x_1, eps, n, der_f_stohastic, X, y)
+    print(N, np.round(x_k, 3), "RMSE", np.round(rmse(x_k, X, y), 3))
+
+print("BFGS")
+for N in [50, 100, 1000, 10000, 100000, 1000000]:
+    X, y = generateN(N)
+    x_1 = [2, 1]
+    n = 1000
+    x_k = bfgs(x_1, n, der_f, X, y)
+    print(N, np.round(x_k, 3), "RMSE", np.round(rmse(x_k, X, y), 3))
+
+print("L-BFGS")
+for N in [50, 100, 1000, 10000, 100000, 1000000]:
+    X, y = generateN(N)
+    x_1 = [2, 1]
+    n = 1000
+    x_k = l_bfgs(x_1, n, der_f, X, y)
+    print(N, np.round(x_k, 3), "RMSE", np.round(rmse(x_k, X, y), 3))
+
+
+
+
