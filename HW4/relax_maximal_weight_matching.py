@@ -1,3 +1,4 @@
+from operator import index
 from cvxopt import solvers, matrix
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -7,14 +8,34 @@ def maximalWeightMatching(e, G, h):
     M = e * 0.0
     n_iters = 1000
     k = 1
+    old_cost = np.sum(M * e)
+
+    print(M)
 
     for i in range(n_iters):
 
-        amount_of_edges_to_remove = np.random.random_integers(1, k)
-        if np.sum(M) >= amount_of_edges_to_remove:
-            indexes = np.where(M == 1)
-            edges_to_remove = np.random.choice(indexes, size=amount_of_edges_to_remove)
+        new_M = M.copy()
 
+        amount_of_edges_to_remove = np.random.random_integers(1, k)
+        amount_of_edges_to_add = np.random.random_integers(1, k)
+        if np.sum(new_M) >= amount_of_edges_to_remove:
+            indexes = np.where(new_M == 1)
+            edges_to_remove = np.random.choice(indexes[0], size=amount_of_edges_to_remove)
+            new_M[edges_to_remove] = 0
+        
+        indexes = np.where(new_M == 0)
+        edges_to_add = np.random.choice(indexes[0], size=amount_of_edges_to_add)
+        new_M[edges_to_add] = 1
+
+        new_cost = np.sum(new_M * e)
+
+        if new_cost > old_cost:
+            M = new_M
+            new_cost = old_cost
+    
+
+    print("ccost", old_cost)
+    return old_cost, M
 
 def relaxMaximalWeightMatching(e, G, h):
 
@@ -29,6 +50,8 @@ def relaxMaximalWeightMatching(e, G, h):
     print(x_sol)
 
     return sol["primal objective"]
+
+
 
 if __name__ == "__main__":
 
@@ -72,7 +95,10 @@ if __name__ == "__main__":
         
         h = np.ones((s * s,1))
 
-        primal_obj = relaxMaximalWeightMatching(e, G, h)
+        primal_obj = maximalWeightMatching(e, G, h)
+        cost, M = relaxMaximalWeightMatching(e, G, h)
+
+        print("cost", cost)
 
         y.append(-primal_obj)
 
@@ -82,9 +108,4 @@ if __name__ == "__main__":
     X=poly_reg.fit_transform(X)
     reg = LinearRegression().fit(X, y)
     score = reg.score(X, y)
-    print(score)
-
-    print(reg.coef_)
-
-    print(X, y)
             
