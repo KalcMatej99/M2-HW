@@ -16,11 +16,10 @@ def interior_point(c, A, b):
     A = A[lambdas != 0,:]
     b = b[lambdas != 0]
     '''
-    print(rankA, A.shape)
+    
     At = np.transpose(A)
 
     n = len(c)
-    print(n)
     U = max(np.abs(b).max(), np.abs(A).max(), np.abs(c).max())
     reducer = 10 ** (len(str(int(U))) - 1)
 
@@ -39,28 +38,17 @@ def interior_point(c, A, b):
 
     ## Construct (P')
 
-    A_ = np.concatenate((np.concatenate((A, np.zeros((len(A), 1))), axis = 1),p), axis = 1, dtype=object)
-    A_ = np.concatenate((A_, np.concatenate((np.transpose(e), [[1.0, 1.0]]), axis = 1)), axis = 0, dtype=object)
+    A_ = np.concatenate((np.concatenate((A, np.zeros((len(A), 1))), axis = 1),p), axis = 1)
+    A_ = np.concatenate((A_, np.concatenate((np.transpose(e), [[1.0, 1.0]]), axis = 1)), axis = 0)
     At_ = np.transpose(A_)
-    b_ = np.concatenate((d, [[n + 2]]), axis = 0, dtype=object)
+    b_ = np.concatenate((d, [[n + 2]]), axis = 0)
 
     ## Initial solution (x_0, y_0, s_0, mu_0)
     mu = 2 * (np.square(M) + np.sum(np.square(c))) ** 0.5
 
-    x_0 = np.concatenate((np.ones((n, 1)), [[1.0], [1.0]]), axis = 0, dtype=object)
-    y_0 = np.concatenate((np.zeros((m, 1)), [[-mu]]), axis = 0, dtype=object)
-    s_0 = np.concatenate((c + e * mu, [[mu], [M + mu]]), axis = 0, dtype=object)
-
-    print(s_0)
-
-
-    print("A^T * y =", np.dot(At_, y_0))
-    print("s =", s_0)
-    print("A^T * y + s =", np.dot(At_, y_0) + s_0)
-    print("Original c", c)
-    print(len(c), len(s_0))
-
-    print(dd)
+    x_0 = np.concatenate((np.ones((n, 1)), [[1.0], [1.0]]), axis = 0)
+    y_0 = np.concatenate((np.zeros((m, 1)), [[-mu]]), axis = 0)
+    s_0 = np.concatenate((c + e * mu, [[mu], [M + mu]]), axis = 0)
 
     e_ = np.ones((len(A_[0]), 1))
     ## Solve P' using S in iterations
@@ -82,17 +70,9 @@ def interior_point(c, A, b):
         x_0 = x_0 + h
         s_0 = s_0 + f
         y_0 = y_0 + k
-        mu = (1-1/(8 * np.sqrt(n + 2))) * mu
+        mu = (1-0.15) * mu
+        #mu = (1-1/(6 * np.sqrt(n + 2))) * mu
 
-
-
-    print("mu", mu, "x n+2", x_0[-1])
-
-    print("x", x_0, "s", s_0, "y", y_0)
-
-
-    print("A^T * y + s =", np.dot(At_, y_0) + s_0)
-    print("Original c", c * W)
 
     x_0[x_0 < R/(4*n)] = 0
     s_0[s_0 < R/(4*n)] = 0
@@ -108,7 +88,6 @@ def interior_point(c, A, b):
     optimal_s *= W
     optimal_y *= W
 
-    print("B in N", B, N)
 
     x_b = optimal_x[B]
     x_n = optimal_x[N]
@@ -119,26 +98,20 @@ def interior_point(c, A, b):
     A_b = A[:, B]
     A_n = A[:, N]
 
-    print("SW", len(B), m)
     if len(B) < m:
         optimal_x, optimal_s, optimal_y = interior_point(c_b, A_b, b)
-        print(optimal_x, optimal_s, optimal_y)
     elif len(B) == m:
         optimal_x_b = np.dot(np.linalg.inv(A_b), b)
-        print("opt x b ", optimal_x_b)
-
-        print(np.transpose(optimal_x))
         optimal_x[B] = optimal_x_b
-        print(np.transpose(optimal_x))
 
     return optimal_x, optimal_s, optimal_y
 
 def bread():
-    c = np.transpose(np.array([[10.0, 22.0, 15.0, 45.0, 40.0, 20.0, 87.0, 21.0]], dtype=object))
-    A = np.array([[-18.0, -48.0,-5.0,-1.0,-5.0,-0.0,-0.0,-8.0], [-2.0, -11.0, -3.0, -1.0, -3.0, -0.0, -15.0,-1.0], [-0.0,-6.0,-3.0,-10.0,-3.0,-100.0,-30.0,-1.0], [-77.0,-270.0,-60.0,-140.0,-61.0,-880.0,-330.0,-32.0], [18.0, 48.0,5.0,1.0,5.0,0.0,0.0,8.0], [2.0, 11.0, 3.0, 1.0, 3.0, 0.0, 15.0,1.0], [0.0,6.0,3.0,10.0,3.0,100.0,30.0,1.0], [77.0,270.0,60.0,140.0,61.0,880.0,330.0,32.0]], dtype=object)
-    b = np.transpose([[-250.0, -50.0, -50.0, -2200.0, 370.0, 170.0, 90.0, 2400.0]], dtype=object)
-    ce = np.concatenate((c, np.zeros((len(A), 1))), axis = 0, dtype=object)
-    Ae = np.concatenate((A, np.identity(len(A))), axis = 1, dtype=object)
+    c = np.transpose(np.array([[10.0, 22.0, 15.0, 45.0, 40.0, 20.0, 87.0, 21.0]]))
+    A = np.array([[-18.0, -48.0,-5.0,-1.0,-5.0,-0.0,-0.0,-8.0], [-2.0, -11.0, -3.0, -1.0, -3.0, -0.0, -15.0,-1.0], [-0.0,-6.0,-3.0,-10.0,-3.0,-100.0,-30.0,-1.0], [-77.0,-270.0,-60.0,-140.0,-61.0,-880.0,-330.0,-32.0], [18.0, 48.0,5.0,1.0,5.0,0.0,0.0,8.0], [2.0, 11.0, 3.0, 1.0, 3.0, 0.0, 15.0,1.0], [0.0,6.0,3.0,10.0,3.0,100.0,30.0,1.0], [77.0,270.0,60.0,140.0,61.0,880.0,330.0,32.0]])
+    b = np.transpose(np.array([[-250.0, -50.0, -50.0, -2200.0, 370.0, 170.0, 90.0, 2400.0]]))
+    ce = np.concatenate((c, np.zeros((len(A), 1))), axis = 0)
+    Ae = np.concatenate((A, np.identity(len(A))), axis = 1)
 
 
     xe, se, y = interior_point(ce, Ae, b)
@@ -147,10 +120,12 @@ def bread():
     s = se[:len(A[0])]
 
     print("Primal Problem")
+    print("Optimal x", x)
     print("Min val", np.dot(np.transpose(c), x))
     print("A*x=", np.dot(A, x))
     print("Ae*xe=", np.dot(Ae, xe))
     print("Original b", b)
+
 
     print("Dual problem")
     print("Max value", np.dot(np.transpose(b), y))

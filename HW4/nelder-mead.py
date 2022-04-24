@@ -1,7 +1,9 @@
 import numpy as np
 import subprocess
+from scipy.optimize import fmin_l_bfgs_b
 
-def nelder_mead(f, x_0, displacement = 1):
+
+def nelder_mead(f, x_0, displacement = 1, tol = 1e-5):
 
     def nelder_mead_internal(f, X, tol = 1e-5, alpha = 1, gamma = 2, p = 0.5, sigma = 0.5):
 
@@ -9,7 +11,6 @@ def nelder_mead(f, x_0, displacement = 1):
         Y = []
         for x in X:
             Y.append(f(x))
-        print(Y)
         
         X = X[np.argsort(Y)]
 
@@ -53,8 +54,7 @@ def nelder_mead(f, x_0, displacement = 1):
         x_i[i] += displacement
         X.append(x_i)
 
-    print(X)
-    return nelder_mead_internal(f, np.array(X))
+    return nelder_mead_internal(f, np.array(X), tol=tol)
 
 
 
@@ -85,23 +85,29 @@ def f3(X):
     )
 
 def ex2():
-    start_f1_a = [0, 0, 0]
-    start_f1_b = [1, 1, 0]
-    x = np.array([start_f1_a, start_f1_b, [0,0,5]])
-    optimal_x = nelder_mead(f1, x)
-    print("f1", "x = ", optimal_x, "f(x) = ", f1(optimal_x))
+    for displacement in [1,2,3]:
+        
+        start_f1_a = [0, 0, 0]
+        start_f1_b = [1, 1, 0]
+        optimal_x = nelder_mead(f1, start_f1_a, displacement=displacement)
+        print("f1", "initial pos.", start_f1_a, "diameter = ", displacement, "x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f1(optimal_x), 2))
 
-    start_f2_a = [1.2, 1.2, 1.2]
-    start_f2_b = [-1, 1.2, 1.2]
-    x = np.array([start_f2_a, start_f2_b, [-2,-1,-1]])
-    optimal_x = nelder_mead(f2, x)
-    print("f2", "x = ", optimal_x, "f(x) = ", f2(optimal_x))
+        optimal_x = nelder_mead(f1, start_f1_b, displacement=displacement)
+        print("f1", "initial pos.", start_f1_b, "diameter = ", displacement,"x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f1(optimal_x), 2))
 
-    start_f3_a = [1, 1]
-    start_f3_b = [4.5, 4.5]
-    x = np.array([start_f3_a, start_f3_b, [-1,2.5]])
-    optimal_x = nelder_mead(f3, x)
-    print("f3", "x = ", optimal_x, "f(x) = ", f3(optimal_x))
+        start_f2_a = [1.2, 1.2, 1.2]
+        start_f2_b = [-1, 1.2, 1.2]
+        optimal_x = nelder_mead(f2, start_f2_a, displacement=displacement)
+        print("f2", "initial pos.", start_f2_a, "diameter = ", displacement,"x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f2(optimal_x), 2))
+        optimal_x = nelder_mead(f2, start_f2_b, displacement=displacement)
+        print("f2", "initial pos.", start_f2_b, "diameter = ", displacement,"x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f2(optimal_x), 2))
+
+        start_f3_a = [1, 1]
+        start_f3_b = [4.5, 4.5]
+        optimal_x = nelder_mead(f3, start_f3_a, displacement=displacement)
+        print("f3", "initial pos.", start_f3_a, "diameter = ", displacement,"x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f3(optimal_x), 2))
+        optimal_x = nelder_mead(f3, start_f3_b, displacement=displacement)
+        print("f3", "initial pos.", start_f3_b, "diameter = ", displacement,"x* = ", np.round(optimal_x, 2), "f(x*) = ", round(f3(optimal_x), 2))
 
 def ex3():
     def f1(X):
@@ -114,15 +120,28 @@ def ex3():
         r = subprocess.run(["./hw4_nix", "63180368", "3", str(X[0]), str(X[1]), str(X[2])], stdout=subprocess.PIPE)
         return float(r.stdout)
 
-    x = np.array([[1,-1,1], [0,0,0], [-1,2.5, 7]])
-    #optimal_x = nelder_mead(f1, x)
-    #print("f1", "x = ", optimal_x, "f(x) = ", f1(optimal_x)) #1.7
+    
+    optimal_x = nelder_mead(f1, [0,0,0], tol=1e-3)
+    print("f1", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f1(optimal_x), 2))
 
-    x = np.array([[1,-1,1], [0,0,0], [-1,2.5, 7]])
-    #optimal_x = nelder_mead(f2, x)
-    #print("f2", "x = ", optimal_x, "f(x) = ", f2(optimal_x)) #1.33
+    optimal_x = nelder_mead(f2, [0,0,0], tol=1e-3)
+    print("f2", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f2(optimal_x), 2))
 
-    x = [0,0,0]
-    optimal_x = nelder_mead(f3, x)
-    print("f3", "x = ", optimal_x, "f(x) = ", f3(optimal_x)) #0.863
-ex3()
+    optimal_x = nelder_mead(f3, [0,0,0], tol=1e-3)
+    print("f3", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f3(optimal_x), 2))
+    
+    optimal_x = fmin_l_bfgs_b(f1, [0,0,0], maxiter=20, approx_grad=True)[0]
+    print("f1", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f1(optimal_x), 2))
+
+    optimal_x = fmin_l_bfgs_b(f2, [0,0,0], maxiter=20, approx_grad=True)[0]
+    print("f2", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f2(optimal_x), 2))
+
+    optimal_x = fmin_l_bfgs_b(f3, [0,0,0], maxiter=20, approx_grad=True)[0]
+    print("f3", "x* = ", np.round(optimal_x, 2), "f(x) = ", round(f3(optimal_x), 2))
+
+
+if __name__ == "__main__":
+    print("Start Exercise 2")
+    ex2()
+    print("Start Exercise 3")
+    ex3()
